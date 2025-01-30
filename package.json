@@ -1,0 +1,52 @@
+{
+  "name": "crypto-price-cli",
+  "version": "1.0.0",
+  "description": "CLI tool to fetch cryptocurrency prices",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "crypto-price": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "start": "node --env-file=.env src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:watch": "npm test -- --watch",
+    "test:coverage": "npm test -- --coverage",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && babel src -d dist --copy-files",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test",
+    "lint": "eslint src tests",
+    "format": "prettier --write \"src/**/*.js\" \"tests/**/*.js\""
+  },
+  "keywords": [
+    "cli",
+    "cryptocurrency",
+    "prices",
+    "crypto"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "commander": "^11.1.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.23.0",
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.22.20",
+    "@jest/globals": "^29.7.0",
+    "babel-jest": "^29.7.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-jest": "^27.6.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.1.0"
+  }
+}
