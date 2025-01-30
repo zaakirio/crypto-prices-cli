@@ -1,6 +1,6 @@
 # Crypto Price CLI
 
-A command-line tool to fetch cryptocurrency prices from the CoinPaprika API.
+A command-line tool to fetch cryptocurrency prices from the CoinPaprika API, this code is an exercise in creating a node cli project that speaks to API and writes to local file
 
 ## Project Structure
 ```
