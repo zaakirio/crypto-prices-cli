@@ -1,5 +1,6 @@
 import { Command } from "commander";
 import { fetchPrice } from "../services/crypto.js";
+import { displayPriceInfo } from "../util/displayPriceInfo.js";
 
 export const priceCommand = new Command()
   .name("price")
@@ -18,15 +19,4 @@ export async function handlePrice(ticker, options) {
   }
 }
 
-function displayPriceInfo(ticker, data, verbose) {
-  console.log("Price Information:");
-  const priceInfo = `${ticker.toUpperCase()}: ${data.price}`
-  console.log(priceInfo);
 
-  if (verbose) {
-    const priceVerbose = `24h Change: ${data.change24h}\n24h Volume:Volume: ${data.volume24h}`;
-    console.log(priceVerbose)
-    return priceInfo + priceVerbose
-  }
-  return priceInfo
-}

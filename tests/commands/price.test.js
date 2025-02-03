@@ -1,19 +1,71 @@
-// import { jest } from "@jest/globals";
-import { exec } from "child_process";
-import { promisify } from "util";
+import { Command } from "commander";
+// import { fetchPrice } from "../../src/services/crypto.js";
+// import { handlePrice, priceCommand } from "../../src/commands/price.js";
+import { displayPriceInfo } from "../../src/util/displayPriceInfo.js";
 import { jest, describe, it, expect } from '@jest/globals';
 
-const execAsync = promisify(exec);
+jest.unstable_mockModule("../../src/services/crypto.js", () => ({
+  fetchPrice: jest.fn(),
+}));
+const { fetchPrice } = await import("../../src/services/crypto.js");
+const  { handlePrice } = await import("../../src/commands/price.js");
 
-describe("price command", () => {
-  it("displays price information", async () => {
-    const { stdout } = await execAsync("node src/index.js price btc");
-    expect(stdout).toContain("Price Information");
+process.exit = jest.fn();
+console.log = jest.fn();
+console.error = jest.fn();
+
+describe("priceCommand", () => {
+  beforeEach(() => {
+    jest.resetModules();
+    jest.clearAllMocks();
   });
 
-  it("displays verbose information when flag is used", async () => {
-    const { stdout } = await execAsync("node src/index.js price btc --verbose");
-    expect(stdout).toContain("24h Change");
-    expect(stdout).toContain("24h Volume");
+  it("should fetch and display price information without verbose option", async () => {
+    
+    const mockData = { price: 50000, change24h: 0.5, volume24h: 1000000 };
+    fetchPrice.mockResolvedValue(mockData);
+
+    await handlePrice("BTC", { verbose: false });
+
+    expect(fetchPrice).toHaveBeenCalledWith("BTC");
+    expect(console.log).toHaveBeenCalledWith("Price Information:");
+    expect(console.log).toHaveBeenCalledWith("BTC: 50000");
+    expect(console.log).not.toHaveBeenCalledWith("24h Change: 0.5\n24h Volume: 1000000");
+  });
+
+  it("should fetch and display price information with verbose option", async () => {
+    const mockData = { price: 50000, change24h: 0.5, volume24h: 1000000 };
+    fetchPrice.mockResolvedValue(mockData);
+
+    await handlePrice("BTC", { verbose: true });
+
+    expect(fetchPrice).toHaveBeenCalledWith("BTC");
+    expect(console.log).toHaveBeenCalledWith("Price Information:");
+    expect(console.log).toHaveBeenCalledWith("BTC: 50000");
+    expect(console.log).toHaveBeenCalledWith("24h Change: 0.5\n24h Volume: 1000000");
+  });
+
+  it("should handle errors and log them", async () => {
+    const mockError = new Error("Failed to fetch price");
+    fetchPrice.mockRejectedValue(mockError);
+
+    await handlePrice("BTC", { verbose: false });
+
+    expect(fetchPrice).toHaveBeenCalledWith("BTC");
+    expect(console.error).toHaveBeenCalledWith("Error: Failed to fetch price");
+  });
+
+  it("should return the correct price information without verbose", () => {
+    const mockData = { price: 50000, change24h: 0.5, volume24h: 1000000 };
+    const result = displayPriceInfo("BTC", mockData, false);
+
+    expect(result).toBe("BTC: 50000");
+  });
+
+  it("should return the correct price information with verbose", () => {
+    const mockData = { price: 50000, change24h: 0.5, volume24h: 1000000 };
+    const result = displayPriceInfo("BTC", mockData, true);
+
+    expect(result).toBe("BTC: 5000024h Change: 0.5\n24h Volume: 1000000");
   });
 });
